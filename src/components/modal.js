@@ -40,7 +40,6 @@ export function closeModal() {
     el.classList.remove('popup-visible');
   });
 
-  // Сброс значений полей формы после закрытия модального окна
   document.querySelector('.popup__input_type_name').value = '';
   document.querySelector('.popup__input_type_description').value = '';
 }
@@ -61,21 +60,22 @@ const profileDescription = document.querySelector('.profile__description');
 
 // Обработчик события отправки формы
   function handleFormSubmit(evt) {
-  evt.preventDefault(); // Отменяем стандартное поведение отправки формы
+  evt.preventDefault();
 
-  // Получаем значения полей
   const nameValue = nameInput.value;
   const descriptionValue = jobInput.value;
 
-  // Вставьте новые значения с помощью textContent
   profileTitle.textContent = nameValue;
   profileDescription.textContent = descriptionValue;
 
-  // Сброс значений полей формы после отправки
+  localStorage.setItem('my-mesto-profile', JSON.stringify({
+    name: nameValue,
+    job: descriptionValue
+  }));
+
   nameInput.value = '';
   jobInput.value = '';
 
-  // Закрываем модальное окно
   closeModal();
 }
 
@@ -90,23 +90,24 @@ const cardLinkInput = formNewCard.querySelector('.popup__input_type_url');
 
 // Обработчик события отправки формы для добавления новой карточки
 formNewCard.addEventListener('submit', function (evt) {
-  evt.preventDefault(); // Отменяем стандартное поведение отправки формы
+  evt.preventDefault();
 
-  // Получаем значения полей
   const cardName = cardNameInput.value;
   const cardLink = cardLinkInput.value;
 
-  // Создаем новую карточку и добавляем ее в начало контейнера
   if (cardName && cardLink) {
-    const newCardElement = createCard({ name: cardName, link: cardLink }, removeCard);
+    const newCardData = { name: cardName, link: cardLink };
+    
+    const newCardElement = createCard(newCardData, removeCard);
     const cardsContainer = document.querySelector('.places__list');
     cardsContainer.insertBefore(newCardElement, cardsContainer.firstChild);
 
-    // Сброс значений полей формы после отправки
+    const currentCards = JSON.parse(localStorage.getItem('my-mesto-cards')) || [];
+    currentCards.unshift(newCardData);
+    localStorage.setItem('my-mesto-cards', JSON.stringify(currentCards));
+
     cardNameInput.value = '';
     cardLinkInput.value = '';
-
-    // Закрываем модальное окно
     closeModal();
   }
 });

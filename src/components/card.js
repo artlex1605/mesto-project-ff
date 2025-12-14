@@ -20,7 +20,6 @@ export function createCard({ name, link }, removeCard) {
 
   cardButton.addEventListener('click', removeCard);
   
-  // Добавляем обработчик события для кнопки лайка внутри createCard
   const likeButtons = cardElement.querySelectorAll('.card__like-button');
   
   likeButtons.forEach(button => {
@@ -32,7 +31,16 @@ export function createCard({ name, link }, removeCard) {
 
 export function removeCard(event) {
   const cardItem = event.target.closest('.places__item');
+  
   if (cardItem) {
+    const cardImage = cardItem.querySelector('.card__image').src;
+    
     cardItem.remove();
+
+    const storedCards = JSON.parse(localStorage.getItem('my-mesto-cards')) || [];
+    
+    const newCards = storedCards.filter(card => card.link !== cardImage);
+    
+    localStorage.setItem('my-mesto-cards', JSON.stringify(newCards));
   }
 }
